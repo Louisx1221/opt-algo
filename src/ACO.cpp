@@ -112,7 +112,8 @@ void ACO::Optimize()
 				route_best[k] = tabu[index_best][k];
 			reward_best = reward[index_best];
 		}
-		cout << reward_best << " ";
+		
+		//cout << reward_best << " ";
 
 		UpdatePheromone();
 	}
@@ -191,7 +192,7 @@ void ACO::Probabilities(int city, int route[])
 double ACO::HeuristicValue(int city_i, int city_j)
 {
 	//double value = 1 / Distance(city_i, city_j);
-	double value = func(cities[city_i], cities[city_j]);
+	double value = 1 / func(cities[city_i], cities[city_j]);
 	return value;
 }
 
@@ -205,9 +206,12 @@ double ACO::Distance(int city_i, int city_j)
 double ACO::Reward(int route[])
 {
 	double reward = 0.0;
+	//for (int i = 0; i < n_cities - 1; i++)
+	//	reward += Distance(route[i], route[i + 1]);
+	//reward += Distance(route[n_cities - 1], route[0]);
 	for (int i = 0; i < n_cities - 1; i++)
-		reward += Distance(route[i], route[i + 1]);
-	reward += Distance(route[n_cities - 1], route[0]);
+		reward += func(cities[route[i]], cities[route[i + 1]]);
+	reward += func(cities[route[n_cities - 1]], cities[route[0]]);
 	return reward;
 }
 
