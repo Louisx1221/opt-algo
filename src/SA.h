@@ -9,16 +9,11 @@
 #include<iterator>
 #include<iostream>
 using namespace std;
-//参数设置
-#define T0 1000				//初始温度
-#define T_end 20			//退出温度（环境温度）
-#define q 0.99				//退火系数
-#define L 5					//每个温度时的迭代次数，即链长
-#define C 10				//城市数量
-//输入文件："in.txt"
+
 class Simulated_Annealing
 {
 public:
+	void SA_set(int T0,int T_end,double q,int L,int C);
 	void SA();//SA主体功能
 	void in();//输入文件
 	int getCount() { return count; }//给外部调用count值
@@ -33,18 +28,18 @@ public:
 
 private:
 	int i, j;
-	double citys_position[C][2];
-	int Current_copy[C];
-	int Current_Solution[C];
-	double T = T0;
+	int T0, T_end, L, C;
+	double T,q;
 	double f1, f2, df;
 	int count = 0;
 	void citys_generate();
-	void Swap(int* input_solution);
-	double Fitness(int* input_solution);
+	void Swap(vector<int> &input_solution);
+	double Fitness(vector<int> &input_solution);
 	double distance(double* city1, double* city2);
 	vector<vector<double>> All_solutions;
 	vector<vector<double>> All_fitness;
 	vector<int> temp_city;
-	
+	vector<vector<double>> citys_position;
+	vector<int> Current_copy;
+	vector<int> Current_Solution;
 };

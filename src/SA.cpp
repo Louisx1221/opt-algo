@@ -1,20 +1,39 @@
 //Simulated Annealing
 #include "../Simulated Annealing/SA.h"
 #define _CRT_SECURE_NO_WARNINGS 1
+
 using namespace std;
 
 void Simulated_Annealing::in()
 {
+	double a;
 	ifstream fin("in.txt");
 	for (i = 0; i < C; i++)
+	{
+		citys_position.push_back({});
 		for (j = 0; j < 2; j++)
-			fin >> citys_position[i][j];
+		{
+			
+			fin >> a;
+			citys_position[i].push_back(a);
+		}
+	}
 	fin.close();
+}
+
+void Simulated_Annealing::SA_set(int T0_, int T_end_, double q_, int L_, int C_)
+{
+	T0 = T0_;
+	T_end = T_end_;
+	q = q_;
+	L = L_;
+	C = C_;
 }
 void Simulated_Annealing::SA()
 {
 	citys_generate();
 	f1 = Fitness(Current_Solution);
+	T = T0;
 	while (T > T_end)
 	{
 		All_solutions.push_back({});
@@ -23,7 +42,7 @@ void Simulated_Annealing::SA()
 		{
 			for (j = 0; j < C; j++)
 			{
-				Current_copy[j] = Current_Solution[j];
+				Current_copy.push_back(Current_Solution[j]);
 			}
 			Swap(Current_copy);
 			f2 = Fitness(Current_copy);
@@ -34,18 +53,20 @@ void Simulated_Annealing::SA()
 				r = (double)rand() / RAND_MAX;
 				if (r < exp(df / T))
 				{
+					Current_Solution.swap(vector<int>());
 					for (j = 0; j < C; j++)
 					{
-						Current_Solution[j] = Current_copy[j];
+						Current_Solution.push_back(Current_copy[j]);
 					}
 					f1 = f2;
 				}
 			}
 			else
 			{
+				Current_Solution.swap(vector<int>());
 				for (j = 0; j < C; j++)
 				{
-					Current_Solution[j] = Current_copy[j];
+					Current_Solution.push_back(Current_copy[j]);
 				}
 				f1 = f2;
 			}
@@ -55,8 +76,8 @@ void Simulated_Annealing::SA()
 			All_solutions[count].push_back(Current_Solution[j]);
 		}
 		All_fitness[count].push_back(f1);
-
-		T *= q;
+		Current_copy.swap(vector<int>());
+		T =T* q;
 		count++;
 	}
 }
@@ -70,10 +91,10 @@ void Simulated_Annealing::citys_generate()
 	random_shuffle(temp_city.begin(), temp_city.end());
 	for (int j = 0; j < temp_city.size(); j++)
 	{
-		Current_Solution[j] = temp_city[j];
+		Current_Solution.push_back(temp_city[j]);
 	}
 }
-void Simulated_Annealing::Swap(int* input_solution)
+void Simulated_Annealing::Swap(vector<int> &input_solution)
 {
 	int point1 = rand() % C;
 	int point2 = rand() % C;
@@ -83,17 +104,26 @@ void Simulated_Annealing::Swap(int* input_solution)
 	}
 	swap(input_solution[point1], input_solution[point2]);
 }
-double Simulated_Annealing::Fitness(int* input_solution)
+double Simulated_Annealing::Fitness(vector<int> &input_solution)
 {
 	double cost = 0;
+	double a[2], b[2];
 	for (int j = 0; j < C - 1; j++)
 	{
-		cost += distance(citys_position[input_solution[j] - 1], citys_position[input_solution[j + 1] - 1]);
+		a[0] = citys_position[input_solution[j] - 1][0];
+		a[1] = citys_position[input_solution[j] - 1][1];
+		b[0] = citys_position[input_solution[j + 1] - 1][0];
+		b[1] = citys_position[input_solution[j + 1] - 1][1];
+		cost += distance(a, b);
 	}
-	cost += distance(citys_position[input_solution[C - 1] - 1], citys_position[input_solution[0] - 1]);
+	a[0] = citys_position[input_solution[C - 1] - 1][0];
+	a[1] = citys_position[input_solution[C - 1] - 1][1];
+	b[0] = citys_position[input_solution[0] - 1][0];
+	b[1] = citys_position[input_solution[0] - 1][1];
+	cost += distance(a, b);
 	return cost;
 }
-double Simulated_Annealing::distance(double* city1, double*city2)
+double Simulated_Annealing::distance(double* city1, double* city2)
 {
 	double x1 = city1[0];
 	double y1 = city1[1];

@@ -25,7 +25,7 @@ int main()
 
     TS ts = TS(HeuristicValue, n_ants, n_cities, iter_max);
     ACO aco = ACO(HeuristicValue, n_ants, n_cities, iter_max, alpha, beta, q, rho, tau_max);
-    //ACO aco = ACO(n_ants, n_cities);
+    //ACO aco = ACO(HeuristicValue, n_ants, n_cities);
     for (int i = 0; i < n_cities; i++)
     {
         x = rand() / double(RAND_MAX);
