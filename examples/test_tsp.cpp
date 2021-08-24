@@ -7,6 +7,7 @@
 
 #include "../src/ACO.h"
 #include "../src/TS.h"
+#include "../src/MCTS.h"
 
 using namespace std;
 
@@ -23,6 +24,7 @@ int main()
     double alpha = 0.5, beta = 0.8, rho = 0.2, q = 8, tau_max = 1;
     double x, y;
 
+    MCTS mcts = MCTS(HeuristicValue, n_cities);
     TS ts = TS(HeuristicValue, n_ants, n_cities, iter_max);
     ACO aco = ACO(HeuristicValue, n_ants, n_cities, iter_max, alpha, beta, q, rho, tau_max);
     //ACO aco = ACO(HeuristicValue, n_ants, n_cities);
@@ -30,9 +32,17 @@ int main()
     {
         x = rand() / double(RAND_MAX);
         y = rand() / double(RAND_MAX);
+        mcts.CreateCities(i, x, y);
         ts.CreateCities(i, x, y);
         aco.CreateCities(i, x, y);
     }
+
+    mcts.Optimize();
+
+    cout << endl << "Best route:" << endl;
+    for (int i = 0; i < n_cities; i++)
+        cout << mcts.route_best[i] << " ";
+    cout << endl << "Best reward:" << endl << mcts.reward_best << endl;
 
     ts.Optimize();
 
