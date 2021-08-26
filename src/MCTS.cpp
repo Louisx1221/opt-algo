@@ -11,9 +11,10 @@
 
 using namespace std;
 
-MCTS::MCTS(double (*func_)(double*, double*), int n_cities_, int iter_max_, double cp_)
+MCTS::MCTS(double (*func_)(double*, double*), int n_cities_, int n_dim_, int iter_max_, double cp_)
 {
 	func = func_;
+	n_dim = n_dim_;
 	n_cities = n_cities_;
 	iter_max = iter_max_;
 	cp = cp_;
@@ -34,6 +35,9 @@ MCTS::~MCTS()
 		delete[] q_tab[i];
 		delete[] n_tab[i];
 	}
+	delete[] cities;
+	delete[] q_tab;
+	delete[] n_tab;
 }
 
 void MCTS::Init()
@@ -66,10 +70,10 @@ void MCTS::Init()
 	}
 }
 
-void MCTS::CreateCities(int city_id, double pos_x, double pos_y)
+void MCTS::CreateCities(int city, double x[])
 {
-	cities[city_id][0] = pos_x;
-	cities[city_id][1] = pos_y;
+	for (int i = 0; i < n_dim; i++)
+		cities[city][i] = x[i];
 }
 
 void MCTS::Optimize()

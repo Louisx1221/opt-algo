@@ -7,11 +7,11 @@
 class ACO
 {
 public:
-	ACO(double (*func_)(double*, double*), int n_ants_, int n_cities_, int iter_max_ = 100,
+	ACO(double (*func_)(double*, double*), int n_cities_, int n_dim_ = 2, int n_ants_ = 50, int iter_max_ = 100,
 		double alpha_ = 1.0, double beta_ = 2.0, double q_ = 1.0, double rho_ = 0.1, double tau_max_ = 1.0);
 	virtual ~ACO();
 
-	void CreateCities(int city, double pos_x, double pos_y);
+	void CreateCities(int city, double x[]);
 	void Optimize();
 
 	double tau_max, reward_best;
@@ -28,7 +28,7 @@ private:
 
 	double (*func)(double*, double*);
 
-	int n_ants, n_cities, iter_max;
+	int n_cities, n_dim, n_ants, iter_max;
 	double alpha, beta, q, rho;
 
 	double** tau, ** delta_tau, **cities;

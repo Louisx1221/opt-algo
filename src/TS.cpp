@@ -11,11 +11,12 @@
 
 using namespace std;
 
-TS::TS(double (*func_)(double*, double*), int n_cands_, int n_cities_, int iter_max_)
+TS::TS(double (*func_)(double*, double*), int n_cities_, int n_dim_, int n_cands_, int iter_max_)
 {
 	func = func_;
-	n_cands = n_cands_;
 	n_cities = n_cities_;
+	n_dim = n_dim_;
+	n_cands = n_cands_;
 	iter_max = iter_max_;
 
 	tabu_len = (int)sqrt((double)n_cities * (n_cities - 1.0) / 2.0);
@@ -35,11 +36,14 @@ TS::~TS()
 		delete[] cities[i];
 		delete[] tabu[i];
 	}
+	delete[] cities;
+	delete[] tabu;
 
 	for (int i = 0; i < n_cands; i++)
 	{
 		delete[] cands[i];
 	}
+	delete[] cands;
 }
 
 //public
@@ -54,8 +58,8 @@ void TS::Init()
 
 	for (int i = 0; i < n_cities; i++)
 	{
-		cities[i] = new double[2];
-		for (int j = 0; j < 2; j++)
+		cities[i] = new double[n_dim];
+		for (int j = 0; j < n_dim; j++)
 		{
 			cities[i][j] = 0.0;
 		}
@@ -76,10 +80,10 @@ void TS::Init()
 	}
 }
 
-void TS::CreateCities(int city_id, double pos_x, double pos_y)
+void TS::CreateCities(int city, double x[])
 {
-	cities[city_id][0] = pos_x;
-	cities[city_id][1] = pos_y;
+	for (int i = 0; i < n_dim; i++)
+		cities[city][i] = x[i];
 }
 
 //private
@@ -93,7 +97,7 @@ void TS::Optimize()
 	{
 		Neighborhood();
 		
-		int index_best = min_element(reward, reward + n_cities) - reward;
+		int index_best = min_element(reward, reward + n_cands) - reward;
 		if ((reward[index_best] < reward_best) || (i == 0))
 		{
 			int k = 0;

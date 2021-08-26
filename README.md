@@ -6,6 +6,7 @@ Intelligent optimization algorithm
 * Differential Evolution (DE)
 * Simulated Annealing (SA)
 * Tabu Search (TS)
-* Particle Swarm optimization (PSO)
+* Particle Swarm Optimization (PSO)
 * Ant Colony Optimization (ACO)
+* Monte Carlo Tree Search (MCTS)
 * Error Back Propagation (BP)

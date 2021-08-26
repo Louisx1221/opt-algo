@@ -7,10 +7,10 @@
 class TS
 {
 public:
-	TS(double (*func_)(double*, double*), int n_cands_, int n_cities_, int iter_max_ = 100);
+	TS(double (*func_)(double*, double*), int n_cities_, int n_dim_= 2, int n_cands_ = 50, int iter_max_ = 100);
 	virtual ~TS();
 
-	void CreateCities(int city, double pos_x, double pos_y);
+	void CreateCities(int city, double x[]);
 	void Optimize();
 
 	double reward_best;
@@ -26,7 +26,7 @@ private:
 
 	double (*func)(double*, double*);
 
-	int n_cands, n_cities, iter_max, tabu_len;
+	int n_cities, n_dim, n_cands, iter_max, tabu_len;
 
 	double**cities;
 	int** tabu, ** cands;

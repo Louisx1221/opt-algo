@@ -11,12 +11,13 @@
 
 using namespace std;
 
-ACO::ACO(double (*func_)(double*, double*), int n_ants_, int n_cities_, int iter_max_,
+ACO::ACO(double (*func_)(double*, double*), int n_cities_, int n_dim_, int n_ants_, int iter_max_,
 	double alpha_, double beta_, double q_, double rho_, double tau_max_)
 {
 	func = func_;
-	n_ants = n_ants_;
 	n_cities = n_cities_;
+	n_dim = n_dim_;
+	n_ants = n_ants_;
 	iter_max = iter_max_;
 	alpha = alpha_;
 	beta = beta_;
@@ -47,8 +48,6 @@ ACO::~ACO()
 		delete[] tabu[i];
 	}
 }
-
-//public
 
 void ACO::Init()
 {
@@ -87,13 +86,11 @@ void ACO::Init()
 	}
 }
 
-void ACO::CreateCities(int city_id, double pos_x, double pos_y)
+void ACO::CreateCities(int city, double x[])
 {
-	cities[city_id][0] = pos_x;
-	cities[city_id][1] = pos_y;
+	for (int i = 0; i < n_dim; i++)
+		cities[city][i] = x[i];
 }
-
-//private
 
 void ACO::Optimize()
 {

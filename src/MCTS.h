@@ -7,10 +7,10 @@
 class MCTS
 {
 public:
-	MCTS(double (*func_)(double*, double*), int n_cities_, int iter_max_ = 1e5, double cp_ = 2);
+	MCTS(double (*func_)(double*, double*), int n_cities_, int n_dim_ = 2, int iter_max_ = 1000, double cp_ = 2);
 	virtual ~MCTS();
 
-	void CreateCities(int city, double pos_x, double pos_y);
+	void CreateCities(int city, double x[]);
 	void Optimize();
 
 	double reward_best;
@@ -26,7 +26,7 @@ private:
 
 	double (*func)(double*, double*);
 
-	int n_cities, iter_max;
+	int n_cities, n_dim, iter_max;
 	double cp, q_max, q_min;
 
 	double** q_tab, **cities;

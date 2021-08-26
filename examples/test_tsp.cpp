@@ -20,21 +20,21 @@ int main()
 {
     srand((int)time(0));
 
-    int n_ants = 40, n_cities = 10, iter_max = 100;
-    double alpha = 0.5, beta = 0.8, rho = 0.2, q = 8, tau_max = 1;
-    double x, y;
+    int n_cities = 10, n_dim = 2, n_pop = 50, iter_max = 100;
+    double cp = 2.0, alpha = 1.0, beta = 2.0, rho = 0.2, q = 1.0, tau_max = 1.0;
+    double x[2];
 
-    MCTS mcts = MCTS(HeuristicValue, n_cities);
-    TS ts = TS(HeuristicValue, n_ants, n_cities, iter_max);
-    ACO aco = ACO(HeuristicValue, n_ants, n_cities, iter_max, alpha, beta, q, rho, tau_max);
-    //ACO aco = ACO(HeuristicValue, n_ants, n_cities);
+    MCTS mcts = MCTS(HeuristicValue, n_cities, n_dim, n_pop * iter_max, cp);
+    TS ts = TS(HeuristicValue, n_cities, n_dim, n_pop, iter_max);
+    ACO aco = ACO(HeuristicValue, n_cities, n_dim, n_pop, iter_max, alpha, beta, q, rho, tau_max);
+    //ACO aco = ACO(HeuristicValue, n_cities);
     for (int i = 0; i < n_cities; i++)
     {
-        x = rand() / double(RAND_MAX);
-        y = rand() / double(RAND_MAX);
-        mcts.CreateCities(i, x, y);
-        ts.CreateCities(i, x, y);
-        aco.CreateCities(i, x, y);
+        x[0] = rand() / double(RAND_MAX);
+        x[1] = rand() / double(RAND_MAX);
+        mcts.CreateCities(i, x);
+        ts.CreateCities(i, x);
+        aco.CreateCities(i, x);
     }
 
     mcts.Optimize();
