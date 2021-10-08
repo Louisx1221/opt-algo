@@ -8,6 +8,7 @@
 #include "../src/ACO.h"
 #include "../src/TS.h"
 #include "../src/MCTS.h"
+#include "../src/GA.h"
 
 using namespace std;
 
@@ -22,11 +23,12 @@ int main()
 
     int n_cities = 10, n_dim = 2, n_pop = 50, iter_max = 100;
     double cp = 2.0, alpha = 1.0, beta = 2.0, rho = 0.2, q = 1.0, tau_max = 1.0;
-    double x[2];
+    double x[2] = {};
 
     MCTS mcts = MCTS(HeuristicValue, n_cities, n_dim, n_pop * iter_max, cp);
     TS ts = TS(HeuristicValue, n_cities, n_dim, n_pop, iter_max);
     ACO aco = ACO(HeuristicValue, n_cities, n_dim, n_pop, iter_max, alpha, beta, q, rho, tau_max);
+    GA_TSP ga = GA_TSP(HeuristicValue, n_cities, n_dim, n_pop, iter_max);
     //ACO aco = ACO(HeuristicValue, n_cities);
     for (int i = 0; i < n_cities; i++)
     {

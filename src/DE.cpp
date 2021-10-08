@@ -1,4 +1,4 @@
-#include "diff_evo.h"
+#include "DE.h"
 
 de::diff_evo::diff_evo(std::function<double(dvec)>  obj,  // 目标函数
 					   size_t  num_params,				  // 变量个数
