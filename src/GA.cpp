@@ -175,7 +175,7 @@ void GA::Selection()
 }
 
 GA_TSP::GA_TSP(double (*func_)(double*, double*), int chrom_len_, int n_dim_,
-	int pop_, int iter_max_, double pc_, double pm_)
+	int pop_, int iter_max_, double pc_, double pm_, int opc_, int opm_)
 {
 	func = func_;// 收益函数(适应值, 如：距离)
 	chrom_len = chrom_len_;//序列长(如：城市数)
@@ -184,6 +184,8 @@ GA_TSP::GA_TSP(double (*func_)(double*, double*), int chrom_len_, int n_dim_,
 	iter_max = iter_max_;
 	pc = pc_;
 	pm = pm_;
+	opc = opc_;
+	opm = opm_;
 
 	srand((int)time(0));
 
@@ -290,10 +292,10 @@ void GA_TSP::Optimize()
 			if (rand() / double(RAND_MAX) < pc)
 			{
 				r = rand() % pop;
-				Crossover(chroms[j], chroms[r], chroms[pop + j], chroms[2 * pop + r]);
+				Crossover(chroms[j], chroms[r], chroms[pop + j], chroms[2 * pop + r], opc);
 			}
 			if (rand() / double(RAND_MAX) < pm)
-				Mutation(chroms[j], chroms[3 * pop + j]);
+				Mutation(chroms[j], chroms[3 * pop + j], opm);
 		}
 
 		for (int j = 0; j < pop * 4; j++)

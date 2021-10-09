@@ -36,7 +36,7 @@ class GA_TSP
 {
 public:
 	GA_TSP(double (*func_)(double*, double*), int chrom_len_, int n_dim_ = 2,
-		int pop_ = 40, int iter_max_ = 100, double pc_ = 0.8, double pm_ = 0.2);
+		int pop_ = 40, int iter_max_ = 100, double pc_ = 0.8, double pm_ = 0.2, int opc_ = 0, int opm_ = 0);
 	virtual ~GA_TSP();
 
 	void SetCities(int city, double x[]);
@@ -57,7 +57,7 @@ private:
 
 	double (*func)(double*, double*);
 
-	int n_dim, chrom_len, pop, iter_max;
+	int n_dim, chrom_len, pop, iter_max, opc, opm;
 	double pc, pm;
 
 	double* fit_val;
