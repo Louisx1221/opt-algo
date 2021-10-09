@@ -39,20 +39,20 @@ public:
 		int pop_ = 40, int iter_max_ = 100, double pc_ = 0.8, double pm_ = 0.2);
 	virtual ~GA_TSP();
 
+	void SetCities(int city, double x[]);
 	void Optimize();
 
-	double* best_x;
-	double best_y;
+	double reward_best;
+	int* route_best;
 
 private:
 	void Init();
-	void SetCities(int city, double x[]);
 	void InitPop();
 	void Clone(int* chrom_, int* chrom);
 	void Crossover(int* chrom1_, int* chrom2_, int* chrom1, int* chrom2, int op = 0);
 	void Mutation(int* chrom_, int* chrom, int op = 0);
 	double Distance(int city_i, int city_j);
-	double FitVal(int route[]);
+	double Fitness(int route[]);
 	void Selection();
 
 	double (*func)(double*, double*);

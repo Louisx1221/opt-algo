@@ -10,6 +10,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace std;
+
 GA::GA(double (*func_)(double*), int n_dim_, double* lb_, double* ub_, int chrom_len_,
 	int pop_, int iter_max_, double pc_, double pm_)
 {
@@ -196,6 +198,7 @@ GA_TSP::~GA_TSP()
 	}
 	delete[] chroms;
 	delete[] fit_val;
+	delete[] route_best;
 
 	for (int i = 0; i < chrom_len; i++)
 	{
@@ -209,6 +212,7 @@ void GA_TSP::Init()
 	cities = new double* [chrom_len];
 	chroms = new int* [pop * 4];
 	fit_val = new double[pop * 4];
+	route_best = new int[chrom_len];
 
 	for (int i = 0; i < chrom_len; i++)
 	{
@@ -217,15 +221,13 @@ void GA_TSP::Init()
 		{
 			cities[i][j] = 0.0;
 		}
+		route_best[i] = 0;
 	}
 	for (int i = 0; i < pop * 4; i++)
 	{
 		chroms[i] = new int[chrom_len];
-		if (i < pop)
-		{
-			for (int j = 0; j < chrom_len; j++)
-				chroms[i][j] = rand() % 2;
-		}
+		for (int j = 0; j < chrom_len; j++)
+			chroms[i][j] = 0;
 
 		fit_val[i] = 0.0;
 	}
@@ -240,29 +242,29 @@ void GA_TSP::SetCities(int city, double x[])
 
 void GA_TSP::InitPop()
 {
-	////生成初始种群
-	////①一个城市序列
-	//vector<int> temp_cities(chrom_len);
-	//for (int i = 0; i < chrom_len; i++)
-	//	temp_cities[i] = i;
+	//生成初始种群
+	//①一个城市序列
+	vector<int> temp_cities(chrom_len);
+	for (int i = 0; i < chrom_len; i++)
+		temp_cities[i] = i;
 
-	////②打乱后生成初始种群
-	//for (int i = 0; i < chrom_len; i++)
-	//{
-	//	random_shuffle(temp_cities.begin(), temp_cities.end());
-	//	for (int j = 0; j < chrom_len; j++)
-	//	{
-	//		chroms[i][j] = temp_cities[j];
-	//	}
-	//}
+	//②打乱后生成初始种群
+	for (int i = 0; i < pop * 4; i++)
+	{
+		random_shuffle(temp_cities.begin(), temp_cities.end());
+		for (int j = 0; j < chrom_len; j++)
+		{
+			chroms[i][j] = temp_cities[j];
+		}
+	}
 
 	//显示
 	//cout << "init_population:" << endl;
-	//for (i = 0; i < N; i++)
+	//for (int i = 0; i < pop; i++)
 	//{
-	//	for (j = 0; j < T; j++)
+	//	for (int j = 0; j < chrom_len; j++)
 	//	{
-	//		cout << population[i][j] << " ";
+	//		cout << chroms[i][j] << " ";
 	//	}
 	//	cout << endl;
 	//}
@@ -271,6 +273,8 @@ void GA_TSP::InitPop()
 
 void GA_TSP::Optimize()
 {
+	//初始种群
+	InitPop();
 	//迭代优化
 	int r;
 	for (int i = 0; i < iter_max; i++)
@@ -293,12 +297,14 @@ void GA_TSP::Optimize()
 		}
 
 		for (int j = 0; j < pop * 4; j++)
-			fit_val[j] = FitVal(chroms[j]);
+			fit_val[j] = Fitness(chroms[j]);
 
 		Selection();
 	}
 
-	best_y = fit_val[0];
+	for (int i = 0; i < chrom_len; i++)
+		route_best[i] = chroms[0][i];
+	reward_best = fit_val[0];
 }
 
 void GA_TSP::Clone(int* chrom_, int* chrom)
@@ -522,7 +528,7 @@ double GA_TSP::Distance(int city_i, int city_j)
 	return dis;
 }
 
-double GA_TSP::FitVal(int route[])
+double GA_TSP::Fitness(int route[])
 {
 	//计算解的适应度值(如：距离)
 	double reward = 0.0;
@@ -544,9 +550,9 @@ void GA_TSP::Selection()
 	{
 		for (int j = pop * 4 - 1; j > i; j--)
 		{
-			if (fit_val[j] > fit_val[j - 1])
+			if (fit_val[j] < fit_val[j - 1])
 			{
-				for (int k = 0; k < chrom_len * n_dim; k++)
+				for (int k = 0; k < chrom_len; k++)
 				{
 					temp1 = chroms[j][k];
 					chroms[j][k] = chroms[j - 1][k];

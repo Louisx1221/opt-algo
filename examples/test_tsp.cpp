@@ -37,6 +37,7 @@ int main()
         mcts.CreateCities(i, x);
         ts.CreateCities(i, x);
         aco.CreateCities(i, x);
+        ga.SetCities(i, x);
     }
 
     mcts.Optimize();
@@ -59,4 +60,11 @@ int main()
     for (int i = 0; i < n_cities; i++)
         cout << aco.route_best[i] << " ";
     cout << endl << "Best reward:" << endl << aco.reward_best << endl;
+
+    ga.Optimize();
+
+    cout << endl << "Best route:" << endl;
+    for (int i = 0; i < n_cities; i++)
+        cout << ga.route_best[i] << " ";
+    cout << endl << "Best reward:" << endl << ga.reward_best << endl;
 }
