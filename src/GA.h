@@ -13,15 +13,15 @@ public:
 
 	void Optimize();
 
-	double* best_x;
-	double best_y;
+	double* x_best;
+	double y_best;
 
 private:
 	void Init();
 	void Clone(int* chrom_, int* chrom);
 	void Crossover(int* chrom1_, int* chrom2_, int* chrom1, int* chrom2);
 	void Mutation(int* chrom_, int* chrom);
-	double* Decoding(int* chrom);
+	void Decoding(int* chrom, double* x);
 	void Selection();
 
 	double (*func)(double*);

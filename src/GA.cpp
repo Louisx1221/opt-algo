@@ -46,17 +46,18 @@ GA::~GA()
 	}
 	delete[] chroms;
 	delete[] fit_val;
-
+	delete[] x_best;
 	delete[] lb;
 	delete[] ub;
 	delete[] bit_len;
-	delete[] best_x;
 }
 
 void GA::Init()
 {
 	chroms = new int* [pop * 4];
 	fit_val = new double[pop * 4];
+	x_best = new double[n_dim];
+	y_best = INFINITY;
 
 	for (int i = 0; i < pop * 4; i++)
 	{
@@ -67,14 +68,20 @@ void GA::Init()
 				chroms[i][j] = rand() % 2;
 		}
 
-		fit_val[i] = 0.0;
+		fit_val[i] = INFINITY;
 	}
+
+	for (int i = 0; i < n_dim; i++)
+		x_best[i] = 0.0;
 }
 
 void GA::Optimize()
 {
 	int r;
-	double* x;
+	double* x = new double[n_dim];
+	for (int i = 0; i < n_dim; i++)
+		x[i] = 0.0;
+
 	for (int i = 0; i < iter_max; i++)
 	{
 		for (int j = 0; j < pop; j++)
@@ -96,15 +103,17 @@ void GA::Optimize()
 
 		for (int j = 0; j < pop * 4; j++)
 		{
-			x = Decoding(chroms[j]);
+			Decoding(chroms[j], x);
 			fit_val[j] = func(x);
 		}
 
 		Selection();
 	}
 
-	best_x = Decoding(chroms[0]);
-	best_y = fit_val[0];
+	Decoding(chroms[0], x_best);
+	y_best = fit_val[0];
+
+	delete[] x;
 }
 
 void GA::Clone(int* chrom_, int* chrom)
@@ -139,9 +148,8 @@ void GA::Mutation(int* chrom_, int* chrom)
 	chrom[r] = (chrom_[r] + 1) % 2;
 }
 
-double* GA::Decoding(int* chrom)
+void GA::Decoding(int* chrom, double *x)
 {
-	double* x = new double[n_dim];
 	for (int i = 0; i < n_dim; i++)
 	{
 		x[i] = 0.0;
@@ -152,7 +160,6 @@ double* GA::Decoding(int* chrom)
 		x[i] *= bit_len[i];
 		x[i] += lb[i];
 	}
-	return x;
 }
 
 void GA::Selection()
@@ -163,7 +170,7 @@ void GA::Selection()
 	{
 		for (int j = pop * 4 - 1; j > i; j--)
 		{
-			if (fit_val[j] > fit_val[j - 1])
+			if (fit_val[j] < fit_val[j - 1])
 			{
 				for (int k = 0; k < chrom_len * n_dim; k++)
 				{

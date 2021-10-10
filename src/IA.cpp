@@ -45,6 +45,15 @@ IA::~IA()
 	{
 		delete[] chroms[i];
 	}
+	delete[] chroms;
+	delete[] fit_val;
+	delete[] aff;
+	delete[] sim;
+	delete[] enc;
+	delete[] x_best;
+	delete[] lb;
+	delete[] ub;
+	delete[] bit_len;
 }
 
 void IA::Init()
@@ -54,6 +63,8 @@ void IA::Init()
 	aff = new double[pop * 4];
 	sim = new double[pop * 4];
 	enc = new double[pop * 4];
+	x_best = new double[n_dim];
+	y_best = INFINITY;
 
 	for (int i = 0; i < pop * 4; i++)
 	{
@@ -74,7 +85,10 @@ void IA::Init()
 void IA::Optimize()
 {
 	int r;
-	double* x;
+	double* x = new double[n_dim];
+	for (int i = 0; i < n_dim; i++)
+		x[i] = 0.0;
+
 	for (int i = 0; i < iter_max; i++)
 	{
 		for (int j = 0; j < pop; j++)
@@ -96,7 +110,7 @@ void IA::Optimize()
 
 		for (int j = 0; j < pop * 4; j++)
 		{
-			x = Decoding(chroms[j]);
+			Decoding(chroms[j], x);
 			fit_val[j] = func(x);
 		}
 
@@ -104,8 +118,10 @@ void IA::Optimize()
 		Selection();
 	}
 
-	best_x = Decoding(chroms[0]);
-	best_y = fit_val[0];
+	Decoding(chroms[0], x_best);
+	y_best = fit_val[0];
+
+	delete[] x;
 }
 
 void IA::Clone(int* chrom_, int* chrom)
@@ -140,9 +156,8 @@ void IA::Mutation(int* chrom_, int* chrom)
 	chrom[r] = (chrom_[r] + 1) % 2;
 }
 
-double* IA::Decoding(int* chrom)
+void IA::Decoding(int* chrom, double* x)
 {
-	double* x = new double[n_dim];
 	for (int i = 0; i < n_dim; i++)
 	{
 		x[i] = 0.0;
@@ -153,7 +168,6 @@ double* IA::Decoding(int* chrom)
 		x[i] *= bit_len[i];
 		x[i] += lb[i];
 	}
-	return x;
 }
 
 void IA::Selection()
@@ -164,7 +178,7 @@ void IA::Selection()
 	{
 		for (int j = pop * 4 - 1; j > i; j--)
 		{
-			if (enc[j] > enc[j - 1])
+			if (enc[j] < enc[j - 1])
 			{
 				for (int k = 0; k < chrom_len * n_dim; k++)
 				{

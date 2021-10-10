@@ -21,7 +21,7 @@ double func(double x[])
 
 double func1(double x)
 {
-    return -(x - 1) * (x - 2);
+    return (x - 1) * (x - 2);
 }
 
 int main()
@@ -32,13 +32,13 @@ int main()
 
     IA ia = IA(func, dim, lb, ub);
     ia.Optimize();
-    cout << "x = " << ia.best_x[0] << " " << ia.best_x[1] << " " << ia.best_x[2] << endl;
-    cout << "y = " << ia.best_y << endl;
+    cout << "x = " << ia.x_best[0] << " " << ia.x_best[1] << " " << ia.x_best[2] << endl;
+    cout << "y = " << ia.y_best << endl;
 
     GA ga = GA(func, dim, lb, ub);
     ga.Optimize();
-    cout << "x = " << ga.best_x[0] << " " << ga.best_x[1] << " " << ga.best_x[2] << endl;
-    cout << "y = " << ga.best_y << endl;
+    cout << "x = " << ga.x_best[0] << " " << ga.x_best[1] << " " << ga.x_best[2] << endl;
+    cout << "y = " << ga.y_best << endl;
 
     PSO pso = PSO(func, dim, lb, ub);
     pso.Optimize();
