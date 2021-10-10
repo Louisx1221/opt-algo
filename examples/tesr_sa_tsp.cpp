@@ -9,7 +9,7 @@ void main()
 	time_t start, finish;
 	start = clock();
 
-	Simulated_Annealing SA1;
+	SA SA1;
 	SA1.in();
 	SA1.SA();
 

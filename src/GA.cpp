@@ -46,6 +46,11 @@ GA::~GA()
 	}
 	delete[] chroms;
 	delete[] fit_val;
+
+	delete[] lb;
+	delete[] ub;
+	delete[] bit_len;
+	delete[] best_x;
 }
 
 void GA::Init()

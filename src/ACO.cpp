@@ -42,11 +42,15 @@ ACO::~ACO()
 		delete[] tau[i];
 		delete[] delta_tau[i];
 	}
+	delete[] cities;
+	delete[] tau;
+	delete[] delta_tau;
 
 	for (int i = 0; i < n_ants; i++)
 	{
 		delete[] tabu[i];
 	}
+	delete[] tabu;
 }
 
 void ACO::Init()

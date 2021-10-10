@@ -40,10 +40,14 @@ PSO::~PSO()
     {
         delete[] x[i];
         delete[] v[i];
-        delete[] pbest_x[i];
+        delete[] x_pbest[i];
     }
+    delete[] x;
+    delete[] v;
     delete[] y;
-    delete[] pbest_y;
+    delete[] x_best;
+    delete[] x_pbest;
+    delete[] y_pbest;
 }
 
 void PSO::Init()
@@ -51,29 +55,29 @@ void PSO::Init()
     x = new double* [pop];
     v = new double* [pop];
     y = new double [pop];
-    pbest_x = new double* [pop];
-    pbest_y = new double[pop];
+    x_pbest = new double* [pop];
+    y_pbest = new double[pop];
     gbest = 0;
-    gbest_x = new double[n_dim];
-    gbest_y = 0.0;
+    x_best = new double[n_dim];
+    y_best = INFINITY;
 
     for (int i = 0; i < pop; i++)
     {
         x[i] = new double[n_dim];
         v[i] = new double[n_dim];
-        pbest_x[i] = new double[n_dim];
+        x_pbest[i] = new double[n_dim];
         for (int j = 0; j < n_dim; j++)
         {
             x[i][j] = rand() / double(RAND_MAX) * (ub[j] - lb[j]) + lb[j];
             v[i][j] = rand() / double(RAND_MAX) * (2 * v_high[j]) - v_high[j];
-            pbest_x[i][j] = 0.0;
+            x_pbest[i][j] = 0.0;
         }
         y[i] = 0.0;
-        pbest_y[i] = -INFINITY;
+        y_pbest[i] = INFINITY;
     }
 
     for (int i = 0; i < n_dim; i++)
-        gbest_x[i] = 0.0;
+        x_best[i] = 0.0;
 }
 
 void PSO::Optimize()
@@ -86,8 +90,8 @@ void PSO::Optimize()
     }
 
     for (int i = 0; i < n_dim; i++)
-        gbest_x[i] = x[gbest][i];
-    gbest_y = y[gbest];
+        x_best[i] = x[gbest][i];
+    y_best = y[gbest];
 }
 
 void PSO::UpdateVecPos()
@@ -100,7 +104,7 @@ void PSO::UpdateVecPos()
             r1 = rand() / double(RAND_MAX);
             r2 = rand() / double(RAND_MAX);
             v[i][j] *= w;
-            v[i][j] += cp * r1 * (pbest_x[i][j] - x[i][j]) + cg * r2 * (pbest_x[gbest][j] - x[i][j]);
+            v[i][j] += cp * r1 * (x_pbest[i][j] - x[i][j]) + cg * r2 * (x_pbest[gbest][j] - x[i][j]);
             x[i][j] += v[i][j];
             if (x[i][j] < lb[j])
                 x[i][j] = lb[j];
@@ -122,17 +126,17 @@ void PSO::UpdateBest()
 {
     for (int i = 0; i < pop; i++)
     {
-        if (pbest_y[i] < y[i])
+        if (y_pbest[i] > y[i])
         {
             for (int j = 0; j < n_dim; j++)
-                pbest_x[i][j] = x[i][j];
-            pbest_y[i] = y[i];
+                x_pbest[i][j] = x[i][j];
+            y_pbest[i] = y[i];
         }
     }
 
     for (int i = 0; i < pop; i++)
     {
-        if (pbest_y[gbest] < pbest_y[i])
+        if (y_pbest[gbest] > y_pbest[i])
             gbest = i;
     }
 }

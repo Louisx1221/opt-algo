@@ -46,8 +46,6 @@ TS::~TS()
 	delete[] cands;
 }
 
-//public
-
 void TS::Init()
 {
 	cities = new double* [n_cities];
@@ -85,8 +83,6 @@ void TS::CreateCities(int city, double x[])
 	for (int i = 0; i < n_dim; i++)
 		cities[city][i] = x[i];
 }
-
-//private
 
 void TS::Optimize()
 {

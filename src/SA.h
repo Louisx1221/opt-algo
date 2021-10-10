@@ -1,45 +1,30 @@
-#pragma once
-#include<stdlib.h>
-#include<time.h>
-#include<math.h>
-#include<vector>
-#include<algorithm>
-#include<fstream>
-#include<string>
-#include<iterator>
-#include<iostream>
-using namespace std;
+//@file       : SA.h
+//@autor      : github.com/louisx1221
+//@date       : 2021/10/19
 
-class Simulated_Annealing
+#pragma once
+
+class SA
 {
 public:
-	void SA_set(int T0,int T_end,double q,int L,int C);
-	void SA();//SA主体功能
-	void in();//输入文件
-	int getCount() { return count; }//给外部调用count值
-	int getCurrent_Solution(int k)//给外部调用当前解
-	{
-		return Current_Solution[k];
-	}
-	int getF1() { return f1; }//给外部调用f1值
-	void out();//输出文件
-	void get_All_solutions();//输出所有解
+	SA(double (*func_)(double*), int n_dim_, double* lb_, double* ub_,
+		double T_max_ = 100.0, double T_min_ = 1e-7, double c_cool_ = 0.8, int L_ = 300, int stay_max_ = 100);
+	virtual ~SA();
+
+	void Optimize();
+
+	double* x_best;
+	double y_best;
 
 
 private:
-	int i, j;
-	int T0, T_end, L, C;
-	double T,q;
-	double f1, f2, df;
-	int count = 0;
-	void citys_generate();
-	void Swap(vector<int> &input_solution);
-	double Fitness(vector<int> &input_solution);
-	double distance(double* city1, double* city2);
-	vector<vector<double>> All_solutions;
-	vector<vector<double>> All_fitness;
-	vector<int> temp_city;
-	vector<vector<double>> citys_position;
-	vector<int> Current_copy;
-	vector<int> Current_Solution;
+	void Init();
+	void NewSol(double x[], double y[]);
+	void CoolDown();
+
+	double (*func)(double*);
+
+	int n_dim, stay_max;
+	double T, T_max, T_min, L, c_cool;
+	double* lb, * ub;
 };

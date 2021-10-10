@@ -1,174 +1,125 @@
-//Simulated Annealing
-#include "../Simulated Annealing/SA.h"
-#define _CRT_SECURE_NO_WARNINGS 1
+//@file       : SA.cpp
+//@autor      : github.com/louisx1221
+//@date       : 2021/10/19
+
+#include "SA.h"
+
+#include <iostream>
+#include <cmath>
+#include <ctime>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-void Simulated_Annealing::in()
+SA::SA(double (*func_)(double*), int n_dim_, double* lb_, double* ub_,
+	double T_max_, double T_min_, double c_cool_, int L_, int stay_max_)
 {
-	double a;
-	ifstream fin("in.txt");
-	for (i = 0; i < C; i++)
-	{
-		citys_position.push_back({});
-		for (j = 0; j < 2; j++)
-		{
-			
-			fin >> a;
-			citys_position[i].push_back(a);
-		}
-	}
-	fin.close();
-}
-
-void Simulated_Annealing::SA_set(int T0_, int T_end_, double q_, int L_, int C_)
-{
-	T0 = T0_;
-	T_end = T_end_;
-	q = q_;
+	func = func_;
+	n_dim = n_dim_;
+	T_max = T_max_;
+	T_min = T_min_;
+	T = T_max;
+	// coefficient of cooldown
+	c_cool = c_cool_;
+	// num of iteration under every temperature (also called Long of Chain)
 	L = L_;
-	C = C_;
-}
-void Simulated_Annealing::SA()
-{
-	citys_generate();
-	f1 = Fitness(Current_Solution);
-	T = T0;
-	while (T > T_end)
-	{
-		All_solutions.push_back({});
-		All_fitness.push_back({});
-		for (i = 0; i < L; i++)
-		{
-			for (j = 0; j < C; j++)
-			{
-				Current_copy.push_back(Current_Solution[j]);
-			}
-			Swap(Current_copy);
-			f2 = Fitness(Current_copy);
-			df = f1 - f2;
-			if (df < 0)
-			{
-				double r;
-				r = (double)rand() / RAND_MAX;
-				if (r < exp(df / T))
-				{
-					Current_Solution.swap(vector<int>());
-					for (j = 0; j < C; j++)
-					{
-						Current_Solution.push_back(Current_copy[j]);
-					}
-					f1 = f2;
-				}
-			}
-			else
-			{
-				Current_Solution.swap(vector<int>());
-				for (j = 0; j < C; j++)
-				{
-					Current_Solution.push_back(Current_copy[j]);
-				}
-				f1 = f2;
-			}
-		}
-		for (int j = 0; j < C; j++)
-		{
-			All_solutions[count].push_back(Current_Solution[j]);
-		}
-		All_fitness[count].push_back(f1);
-		Current_copy.swap(vector<int>());
-		T =T* q;
-		count++;
-	}
-}
-void Simulated_Annealing::citys_generate()
-{
-	
-	for (int i = 0; i < C; i++)
-	{
-		temp_city.push_back(i + 1);
-	}
-	random_shuffle(temp_city.begin(), temp_city.end());
-	for (int j = 0; j < temp_city.size(); j++)
-	{
-		Current_Solution.push_back(temp_city[j]);
-	}
-}
-void Simulated_Annealing::Swap(vector<int> &input_solution)
-{
-	int point1 = rand() % C;
-	int point2 = rand() % C;
-	while (point1 == point2)
-	{
-		point2 = rand() % C;
-	}
-	swap(input_solution[point1], input_solution[point2]);
-}
-double Simulated_Annealing::Fitness(vector<int> &input_solution)
-{
-	double cost = 0;
-	double a[2], b[2];
-	for (int j = 0; j < C - 1; j++)
-	{
-		a[0] = citys_position[input_solution[j] - 1][0];
-		a[1] = citys_position[input_solution[j] - 1][1];
-		b[0] = citys_position[input_solution[j + 1] - 1][0];
-		b[1] = citys_position[input_solution[j + 1] - 1][1];
-		cost += distance(a, b);
-	}
-	a[0] = citys_position[input_solution[C - 1] - 1][0];
-	a[1] = citys_position[input_solution[C - 1] - 1][1];
-	b[0] = citys_position[input_solution[0] - 1][0];
-	b[1] = citys_position[input_solution[0] - 1][1];
-	cost += distance(a, b);
-	return cost;
-}
-double Simulated_Annealing::distance(double* city1, double* city2)
-{
-	double x1 = city1[0];
-	double y1 = city1[1];
-	double x2 = city2[0];
-	double y2 = city2[1];
-	double dist = pow((pow((x1 - x2), 2) + pow((y1 - y2), 2)), 0.5);
-	return dist;
-}
-void Simulated_Annealing::out()
-{
-	ofstream fout;
-	fout.open("out.txt");
-	fout << "每次退火内部迭代的最终解：" << endl;
-	for (int i = 0; i < All_solutions.size(); i++)
-	{
-		for (int j = 0; j <All_solutions[i].size(); j++)
-		{
-			fout << All_solutions[i][j] << "—>";
-		}
-		fout << All_solutions[i][0] << endl;
-		fout << "适应值为：";
-		for (int j = 0; j < All_fitness[i].size(); j++)
-		{
-			fout << All_fitness[i][j] << "  ";
-		}
-		fout << endl << endl;
+	// stop if y_best stay unchanged over max stay counter times(also called cooldown time)
+	stay_max = stay_max_;
 
-	}
-	fout.close();
-}
-void Simulated_Annealing::get_All_solutions()
-{
-	cout << "每次退火内部迭代的最终解：" << endl;
-	for (int i = 0; i < All_solutions.size(); i++)
+	lb = new double[n_dim];
+	ub = new double[n_dim];
+	for (int i = 0; i < n_dim; i++)
 	{
-		for (int j = 0; j < All_solutions[i].size(); j++)
-		{
-			cout << All_solutions[i][j] << "—>";
-		}
-		cout << All_solutions[i][0] << endl;
-		cout << "适应值为：";
-		for (int j = 0; j < All_fitness[i].size(); j++)
-		{
-			cout << All_fitness[i][j] << "  ";
-		}
-		cout << endl << endl;
+		lb[i] = lb_[i];
+		ub[i] = ub_[i];
 	}
+
+	srand((int)time(0));
+
+	Init();
+}
+
+SA::~SA()
+{
+	delete[] lb;
+	delete[] ub;
+	delete[] x_best;
+}
+
+void SA::Init()
+{
+	x_best = new double[n_dim];
+	for (int i = 0;i<n_dim;i++)
+		x_best[i] = (lb[i] + ub[i]) / 2;
+	y_best = func(x_best);
+}
+
+void SA::Optimize()
+{
+	int stay_num = 0;
+	double* x_current = new double[n_dim];
+	double* x_new = new double[n_dim];
+	double y_current = 0.0, y_new = 0.0;
+	double p = 0.0;
+
+	while ((T > T_min) && (stay_num < stay_max))
+	{
+		for (int i = 0; i < L; i++)
+		{
+			NewSol(x_current, x_new);
+			y_new = func(x_new);
+
+			// Metropolis
+			if (y_new < y_current)
+				p = 1.0;
+			else
+				p = exp(-(y_new - y_current) / T);
+			if (p > rand() / double(RAND_MAX))
+			{
+				for (int j = 0; j < n_dim; j++)
+					x_current[j] = x_new[j];
+				y_current = y_new;
+
+				if (y_new < y_best)
+				{
+					for (int j = 0; j < n_dim; j++)
+						x_best[j] = x_new[j];
+					y_best = y_new;
+				}
+			}
+		}
+
+		if (y_best >= y_current)
+			stay_num++;
+		else
+			stay_num = 0;
+
+		CoolDown();
+	}
+
+	delete[] x_current;
+	delete[] x_new;
+}
+
+void SA::NewSol(double x0[], double x[])
+{
+	double r = 0.0, u = 0.0;
+	for (int i = 0; i < n_dim; i++)
+	{
+		r = rand() / double(RAND_MAX);
+		u = T * (pow(1 + 1 / T, r) - 1);
+		r = rand() / double(RAND_MAX);
+		u = (r > 0.5) ? u : (-u);
+		x[i] = x0[i] + u * (ub[i] - lb[i]);
+		if (x[i] < lb[i])
+			x[i] = lb[i];
+		else if (x[i] > ub[i])
+			x[i] = ub[i];
+	}
+}
+
+void SA::CoolDown()
+{
+	T = T * c_cool;
 }

@@ -13,8 +13,8 @@ public:
 
 	void Optimize();
 
-	double *gbest_x;
-	double gbest_y;
+	double* x_best;
+	double y_best;
 
 private:
 	void Init();
@@ -27,6 +27,6 @@ private:
 	double w, cp, cg, verbose;
 	int pop, n_dim, iter_max, gbest;
 
-	double** x, ** v, ** pbest_x;
-	double* lb, * ub, * v_high, * y, * pbest_y;
+	double** x, ** v, ** x_pbest;
+	double* lb, * ub, * v_high, * y, * y_pbest;
 };

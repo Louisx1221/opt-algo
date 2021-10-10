@@ -7,6 +7,7 @@
 #include "../src/PSO.h"
 #include "../src/GA.h"
 #include "../src/IA.h"
+#include "../src/SA.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ double func(double x[])
     double x1 = x[0];
     double x2 = x[1];
     double x3 = x[2];
-    return -x1 * x2 - (x2 - 0.05) * (x2 - 0.05) - x3 * x3;
+    return x1 * x2 + (x2 - 0.05) * (x2 - 0.05) + x3 * x3;
 }
 
 double func1(double x)
@@ -25,23 +26,30 @@ double func1(double x)
 
 int main()
 {
-
+    int dim = 3;
     double lb[3] = { 0, -1, 0.5 };
     double ub[3] = { 1, 1, 1 };
 
-    IA ia = IA(func, 3, lb, ub);
+    IA ia = IA(func, dim, lb, ub);
     ia.Optimize();
     cout << "x = " << ia.best_x[0] << " " << ia.best_x[1] << " " << ia.best_x[2] << endl;
     cout << "y = " << ia.best_y << endl;
 
-    GA ga = GA(func, 3, lb, ub);
+    GA ga = GA(func, dim, lb, ub);
     ga.Optimize();
     cout << "x = " << ga.best_x[0] << " " << ga.best_x[1] << " " << ga.best_x[2] << endl;
     cout << "y = " << ga.best_y << endl;
 
-    PSO pso = PSO(func, 3, lb, ub);
+    PSO pso = PSO(func, dim, lb, ub);
     pso.Optimize();
 
-    cout << "x = " << pso.gbest_x[0] << " " << pso.gbest_x[1] << " " << pso.gbest_x[2] << endl;
-    cout << "y = " << pso.gbest_y << endl;
+    cout << "x = " << pso.x_best[0] << " " << pso.x_best[1] << " " << pso.x_best[2] << endl;
+    cout << "y = " << pso.y_best << endl;
+
+    SA sa = SA(func, dim, lb, ub);
+    sa.Optimize();
+
+    cout << "x = " << sa.x_best[0] << " " << sa.x_best[1] << " " << sa.x_best[2] << endl;
+    cout << "y = " << sa.y_best << endl;
+
 }
