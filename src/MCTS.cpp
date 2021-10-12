@@ -53,8 +53,8 @@ void MCTS::Init()
 
 	for (int i = 0; i < n_cities; i++)
 	{
-		cities[i] = new double[2];
-		for (int j = 0; j < 2; j++)
+		cities[i] = new double[n_dim];
+		for (int j = 0; j < n_dim; j++)
 			cities[i][j] = 0.0;
 
 		q_tab[i] = new double[n_cities];

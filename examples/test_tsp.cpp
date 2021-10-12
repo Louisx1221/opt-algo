@@ -24,9 +24,9 @@ int main()
 
     srand((int)time(0));
 
-    int n_cities = 100, n_dim = 2, n_pop = 50, iter_max = 100, opc = 0, opm = 0;
+    int n_cities = 100, n_dim = 3, n_pop = 50, iter_max = 100, opc = 0, opm = 0;
     double cp = 2.0, alpha = 1.0, beta = 2.0, rho = 0.2, q = 1.0, tau_max = 1.0, pc = 0.8, pm = 0.2;
-    double x[2] = {};
+    double x[3] = {};
 
     MCTS mcts = MCTS(HeuristicValue, n_cities, n_dim, iter_max, cp);
     TS ts = TS(HeuristicValue, n_cities, n_dim, n_pop, iter_max);
@@ -38,6 +38,7 @@ int main()
     {
         x[0] = rand() / double(RAND_MAX);
         x[1] = rand() / double(RAND_MAX);
+        x[2] = rand() / double(RAND_MAX);
         mcts.CreateCities(i, x);
         ts.CreateCities(i, x);
         aco.CreateCities(i, x);
