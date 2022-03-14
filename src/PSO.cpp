@@ -90,8 +90,8 @@ void PSO::Optimize()
     }
 
     for (int i = 0; i < n_dim; i++)
-        x_best[i] = x[gbest][i];
-    y_best = y[gbest];
+        x_best[i] = x_pbest[gbest][i];
+    y_best = y_pbest[gbest];
 }
 
 void PSO::UpdateVecPos()
